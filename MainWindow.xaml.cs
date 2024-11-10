@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -13,6 +16,7 @@ namespace Luncher
         public MainWindow()
         {
             InitializeComponent();
+            LoadAppButtons();
         }
 
         private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -33,11 +37,25 @@ namespace Luncher
                 string iconPath = settingsWindow.IconPath;
                 bool runAsAdmin = settingsWindow.RunAsAdmin;
 
-                // Create the button for the app
+                // Créer un objet AppData
+                var appData = new AppData
+                {
+                    AppName = appName,
+                    AppPath = appPath,
+                    IconPath = iconPath,
+                    RunAsAdmin = runAsAdmin
+                };
+
+                // Sauvegarder l'application dans le fichier
+                var appDataList = AppDataManager.LoadAppData();
+                appDataList.Add(appData);
+                AppDataManager.SaveAppData(appDataList);
+
+                // Créer le bouton pour l'application
                 var appButton = new Button
                 {
                     Content = appName,
-                    Tag = new { appPath, runAsAdmin },
+                    Tag = appData, // Utiliser l'objet AppData comme Tag
                     Style = (Style)FindResource("AppButtonStyle"),
                     Width = 180,
                     Height = 180,
@@ -45,14 +63,14 @@ namespace Luncher
                     VerticalAlignment = VerticalAlignment.Top
                 };
 
-                // Set the icon image if available
+                // Définir l'icône si disponible
                 if (!string.IsNullOrEmpty(iconPath))
                 {
                     try
                     {
                         var iconImage = new BitmapImage(new Uri(iconPath));
                         appButton.Background = new ImageBrush(iconImage);
-                        appButton.Content = null; // Remove text when an image is set
+                        appButton.Content = null; // Retirer le texte si une image est définie
                     }
                     catch
                     {
@@ -60,35 +78,18 @@ namespace Luncher
                     }
                 }
 
-                // Create a context menu for the app button
-                var contextMenu = new ContextMenu();
-
-                var deleteMenuItem = new MenuItem
-                {
-                    Header = "Delete",
-                    Background = Brushes.Red,
-                    Foreground = Brushes.White
-                };
-                deleteMenuItem.Click += (s, args) =>
-                {
-                    AppWrapPanel.Children.Remove(appButton); // Remove the app button
-                };
-
-                contextMenu.Items.Add(deleteMenuItem);
-                appButton.ContextMenu = contextMenu;
-
-                // Add the app button to the WrapPanel
+                // Ajouter le bouton de l'application au WrapPanel
                 AppWrapPanel.Children.Add(appButton);
 
-                // Define what happens when the app button is clicked
+                // Définir ce qui se passe lorsque le bouton de l'application est cliqué
                 appButton.Click += (s, args) =>
                 {
-                    var appInfo = (dynamic)appButton.Tag;
+                    var appInfo = (AppData)appButton.Tag;
                     var startInfo = new ProcessStartInfo
                     {
-                        FileName = appInfo.appPath,
+                        FileName = appInfo.AppPath,
                         UseShellExecute = true,
-                        Verb = appInfo.runAsAdmin ? "runas" : ""
+                        Verb = appInfo.RunAsAdmin ? "runas" : ""
                     };
 
                     try
@@ -100,7 +101,133 @@ namespace Luncher
                         MessageBox.Show($"Failed to start application: {ex.Message}");
                     }
                 };
+
+                // Créer un menu contextuel pour le bouton de l'application
+                var contextMenu = new ContextMenu();
+
+                var deleteMenuItem = new MenuItem
+                {
+                    Header = "Delete",
+                    Background = Brushes.Red,
+                    Foreground = Brushes.White
+                };
+                deleteMenuItem.Click += (s, args) =>
+                {
+                    AppWrapPanel.Children.Remove(appButton); // Supprimer le bouton de l'application
+                    appDataList.Remove(appData); // Supprimer l'application de la liste
+                    AppDataManager.SaveAppData(appDataList); // Sauvegarder les changements
+                };
+
+                contextMenu.Items.Add(deleteMenuItem);
+                appButton.ContextMenu = contextMenu;
             }
+        }
+
+        private void LoadAppButtons()
+        {
+            var appDataList = AppDataManager.LoadAppData();
+
+            foreach (var appData in appDataList)
+            {
+                // Créer le bouton pour l'application
+                var appButton = new Button
+                {
+                    Content = appData.AppName,
+                    Tag = appData,
+                    Style = (Style)FindResource("AppButtonStyle"),
+                    Width = 180,
+                    Height = 180,
+                    Margin = new Thickness(15),
+                    VerticalAlignment = VerticalAlignment.Top
+                };
+
+                // Définir l'icône si disponible
+                if (!string.IsNullOrEmpty(appData.IconPath))
+                {
+                    try
+                    {
+                        var iconImage = new BitmapImage(new Uri(appData.IconPath));
+                        appButton.Background = new ImageBrush(iconImage);
+                        appButton.Content = null; // Retirer le texte si une image est définie
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Failed to load icon. Defaulting to text-only.");
+                    }
+                }
+
+                // Ajouter le bouton de l'application au WrapPanel
+                AppWrapPanel.Children.Add(appButton);
+
+                // Définir ce qui se passe lorsque le bouton de l'application est cliqué
+                appButton.Click += (s, args) =>
+                {
+                    var appInfo = (AppData)appButton.Tag;
+                    var startInfo = new ProcessStartInfo
+                    {
+                        FileName = appInfo.AppPath,
+                        UseShellExecute = true,
+                        Verb = appInfo.RunAsAdmin ? "runas" : ""
+                    };
+
+                    try
+                    {
+                        Process.Start(startInfo);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Failed to start application: {ex.Message}");
+                    }
+                };
+
+                // Créer un menu contextuel pour le bouton de l'application
+                var contextMenu = new ContextMenu();
+
+                var deleteMenuItem = new MenuItem
+                {
+                    Header = "Delete",
+                    Background = Brushes.Red,
+                    Foreground = Brushes.White
+                };
+                deleteMenuItem.Click += (s, args) =>
+                {
+                    AppWrapPanel.Children.Remove(appButton);
+                    appDataList.Remove(appData); // Supprimer l'application de la liste
+                    AppDataManager.SaveAppData(appDataList); // Sauvegarder les changements
+                };
+
+                contextMenu.Items.Add(deleteMenuItem);
+                appButton.ContextMenu = contextMenu;
+            }
+        }
+    }
+
+    public class AppData
+    {
+        public string AppName { get; set; }
+        public string AppPath { get; set; }
+        public string IconPath { get; set; }
+        public bool RunAsAdmin { get; set; }
+    }
+
+    public static class AppDataManager
+    {
+        private static string dataFile = "appData.json"; // Chemin du fichier de sauvegarde
+
+        public static void SaveAppData(List<AppData> appDataList)
+        {
+            var json = JsonConvert.SerializeObject(appDataList, Formatting.Indented);
+            File.WriteAllText(dataFile, json);
+        }
+
+        public static List<AppData> LoadAppData()
+        {
+            if (File.Exists(dataFile))
+            {
+                var json = File.ReadAllText(dataFile);
+                return JsonConvert.DeserializeObject<List<AppData>>(json);
+            }
+            return new List<AppData>();
         }
     }
 }

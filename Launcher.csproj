@@ -67,13 +67,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="CustomizationWindow.xaml.cs">
-      <DependentUpon>CustomizationWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="SettingsWindow.xaml.cs" />
-    <Page Include="CustomizationWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
