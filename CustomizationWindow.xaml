@@ -1,0 +1,26 @@
+<Window x:Class="Luncher.CustomizationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="App Customization" Height="300" Width="400" Background="#2C2C2C" Foreground="White" WindowStartupLocation="CenterOwner">
+    <Grid>
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+            <!-- Background Color Selection -->
+            <TextBlock Text="Select Background Color" Foreground="White" Margin="5"/>
+            <Button Content="Choose Background Color" Width="250" Height="40" Margin="5" Background="#4CAF50" Foreground="White" Click="ChooseBackgroundColor_Click"/>
+
+            <!-- Button Size Selection -->
+            <TextBlock Text="Select Button Size" Foreground="White" Margin="5"/>
+            <ComboBox x:Name="ButtonSizeComboBox" Width="250" Margin="5">
+                <ComboBoxItem Content="Small" />
+                <ComboBoxItem Content="Medium" />
+                <ComboBoxItem Content="Large" />
+            </ComboBox>
+
+            <!-- Save Button -->
+            <Button Content="Save Customization" Width="250" Height="40" Margin="5" Background="#2196F3" Foreground="White" Click="SaveCustomization_Click"/>
+
+            <!-- Close Button -->
+            <Button Content="Close" Width="250" Height="40" Margin="5" Background="#F44336" Foreground="White" Click="CloseCustomizationWindow_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

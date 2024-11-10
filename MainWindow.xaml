@@ -1,0 +1,42 @@
+﻿<Window x:Class="Luncher.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Launcher - Dev by Jimmy" Height="632" Width="600"
+        Background="#2C2C2C" Foreground="White" WindowStartupLocation="CenterOwner" ResizeMode="CanMinimize" BorderBrush="Black" BorderThickness="2">
+    <Window.Resources>
+        <Style x:Key="AppButtonStyle" TargetType="Button">
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Background" Value="#444444"/>
+            <Setter Property="BorderBrush" Value="White"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="0,0,0,-20">
+        <!-- Draggable Border -->
+        <Border Background="#444444" Height="20" HorizontalAlignment="Stretch" VerticalAlignment="Top" MouseLeftButtonDown="Border_MouseLeftButtonDown"/>
+
+        <StackPanel VerticalAlignment="Top" HorizontalAlignment="Center" Margin="10">
+            <!-- Button to Open Settings Window -->
+        </StackPanel>
+
+        <!-- WrapPanel for app buttons with ScrollViewer -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <WrapPanel x:Name="AppWrapPanel" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="10,80,10,10"/>
+        </ScrollViewer>
+
+        <!-- Open Settings Button -->
+        <Button Content="Open Settings" Foreground="White" Click="OpenSettingsWindow_Click" Margin="173,514,173,26" Width="200" Height="50" RenderTransformOrigin="0.51,-0.279">
+            <Button.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="Black"/>
+                    <GradientStop Color="#FF4E00FF" Offset="0.697"/>
+                </LinearGradientBrush>
+            </Button.Background>
+        </Button>
+    </Grid>
+</Window>
