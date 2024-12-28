@@ -37,7 +37,7 @@ namespace Luncher
                 string iconPath = settingsWindow.IconPath;
                 bool runAsAdmin = settingsWindow.RunAsAdmin;
 
-                // Créer un objet AppData
+
                 var appData = new AppData
                 {
                     AppName = appName,
@@ -46,16 +46,15 @@ namespace Luncher
                     RunAsAdmin = runAsAdmin
                 };
 
-                // Sauvegarder l'application dans le fichier
+
                 var appDataList = AppDataManager.LoadAppData();
                 appDataList.Add(appData);
                 AppDataManager.SaveAppData(appDataList);
 
-                // Créer le bouton pour l'application
                 var appButton = new Button
                 {
                     Content = appName,
-                    Tag = appData, // Utiliser l'objet AppData comme Tag
+                    Tag = appData, 
                     Style = (Style)FindResource("AppButtonStyle"),
                     Width = 180,
                     Height = 180,
@@ -63,14 +62,14 @@ namespace Luncher
                     VerticalAlignment = VerticalAlignment.Top
                 };
 
-                // Définir l'icône si disponible
+
                 if (!string.IsNullOrEmpty(iconPath))
                 {
                     try
                     {
                         var iconImage = new BitmapImage(new Uri(iconPath));
                         appButton.Background = new ImageBrush(iconImage);
-                        appButton.Content = null; // Retirer le texte si une image est définie
+                        appButton.Content = null; 
                     }
                     catch
                     {
@@ -78,10 +77,10 @@ namespace Luncher
                     }
                 }
 
-                // Ajouter le bouton de l'application au WrapPanel
+
                 AppWrapPanel.Children.Add(appButton);
 
-                // Définir ce qui se passe lorsque le bouton de l'application est cliqué
+  
                 appButton.Click += (s, args) =>
                 {
                     var appInfo = (AppData)appButton.Tag;
@@ -102,7 +101,7 @@ namespace Luncher
                     }
                 };
 
-                // Créer un menu contextuel pour le bouton de l'application
+
                 var contextMenu = new ContextMenu();
 
                 var deleteMenuItem = new MenuItem
@@ -129,7 +128,7 @@ namespace Luncher
 
             foreach (var appData in appDataList)
             {
-                // Créer le bouton pour l'application
+
                 var appButton = new Button
                 {
                     Content = appData.AppName,
@@ -141,7 +140,7 @@ namespace Luncher
                     VerticalAlignment = VerticalAlignment.Top
                 };
 
-                // Définir l'icône si disponible
+
                 if (!string.IsNullOrEmpty(appData.IconPath))
                 {
                     try
@@ -156,10 +155,9 @@ namespace Luncher
                     }
                 }
 
-                // Ajouter le bouton de l'application au WrapPanel
                 AppWrapPanel.Children.Add(appButton);
 
-                // Définir ce qui se passe lorsque le bouton de l'application est cliqué
+
                 appButton.Click += (s, args) =>
                 {
                     var appInfo = (AppData)appButton.Tag;
@@ -180,7 +178,7 @@ namespace Luncher
                     }
                 };
 
-                // Créer un menu contextuel pour le bouton de l'application
+
                 var contextMenu = new ContextMenu();
 
                 var deleteMenuItem = new MenuItem
@@ -192,8 +190,8 @@ namespace Luncher
                 deleteMenuItem.Click += (s, args) =>
                 {
                     AppWrapPanel.Children.Remove(appButton);
-                    appDataList.Remove(appData); // Supprimer l'application de la liste
-                    AppDataManager.SaveAppData(appDataList); // Sauvegarder les changements
+                    appDataList.Remove(appData); 
+                    AppDataManager.SaveAppData(appDataList); 
                 };
 
                 contextMenu.Items.Add(deleteMenuItem);
@@ -212,7 +210,7 @@ namespace Luncher
 
     public static class AppDataManager
     {
-        private static string dataFile = "appData.json"; // Chemin du fichier de sauvegarde
+        private static string dataFile = "appData.json"; 
 
         public static void SaveAppData(List<AppData> appDataList)
         {
